@@ -36,7 +36,7 @@ class Game
   def player_turn
     loop do
       loop do
-        puts "Enter 1 to guess a letter. Enter 2 to guess the word."
+        puts "\nEnter 1 to guess a letter. Enter 2 to guess the word."
         @choice = gets.chomp.to_i
         break if [1, 2].include?(@choice)
         puts "Invalid option. Enter 1 or 2."
@@ -57,14 +57,16 @@ class Game
           check_word(@guessed_word)
           @board.display
       end
-      puts "Incorrect letters: #{incorrect_letters}"
-      break if @board.layout == @word.split('')
-      if @incorrect_letters.length >= 7
+      puts "\nIncorrect letters: #{incorrect_letters}"
+      puts "\nIncorrect guesses made: #{@wrong_guess_number} (loss = 7)"
+      if @incorrect_letters.length >= 7 || @wrong_guess_number >= 7
         puts "\nSorry, #{@player.name}. You lose!"
+        break
+      elsif @board.layout == @word.split('')
+        puts "\nCongratulations, #{@player.name}! You win!"
         break
       end
     end
-    puts "\nCongratulations, #{@player.name}! You win!"
   end
 
   def check_word(guessed_word)
@@ -107,6 +109,7 @@ class Board
   end
 
   def display
+    puts "\n"
     puts @layout.join(' ')
   end
 
