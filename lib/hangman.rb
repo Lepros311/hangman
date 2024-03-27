@@ -9,18 +9,89 @@ end
 
 class Game
 
+  attr_reader :word
+  attr_accessor :guessed_letter, :guessed_letters, :incorrect_letters, :guess_number, :guessed_word
+
   def initialize(word)
     @word = word
+    puts "Hi! What's your name?"
+    @player = Player.new(gets.chomp)
+    @board = Board.new(@word)
+    @guessed_letter = ''
+    @guessed_letters = []
+    @incorrect_letters = []
+    @wrong_guess_number = 0
+    @choice = 0
+    @guessed_word
   end
 
-  puts "Hi! What's your name?"
-  player = Player.new(gets.chomp)
+  def start
+    puts "\nWelcome, #{@player.name}."
+    puts "Your word has a total of #{@word.length} letters."
+    puts @word
+    @board.display
+    player_turn
+  end
 
-  board = Board.new
+  def player_turn
+    loop do
+      loop do
+        puts "Enter 1 to guess a letter. Enter 2 to guess the word."
+        @choice = gets.chomp.to_i
+        break if [1, 2].include?(@choice)
+        puts "Invalid option. Enter 1 or 2."
+      end
+      if @choice == 1
+        loop do
+          print "\nGuess a letter: "
+          @guessed_letter = gets.chomp.downcase
+          break if @guessed_letter.match?(/[a-z]/)
+          puts "Invalid option. Valid options are any letter a - z."
+        end
+          @guessed_letters.push(@guessed_letter)
+          check_letter(@guessed_letter)
+          @board.display
+        else
+          print "\nGuess the word: "
+          @guessed_word = gets.chomp.downcase
+          check_word(@guessed_word)
+          @board.display
+      end
+      puts "Incorrect letters: #{incorrect_letters}"
+      break if @board.layout == @word.split('')
+      if @incorrect_letters.length >= 7
+        puts "\nSorry, #{@player.name}. You lose!"
+        break
+      end
+    end
+    puts "\nCongratulations, #{@player.name}! You win!"
+  end
+
+  def check_word(guessed_word)
+    if @word == guessed_word
+      @board.layout = @word.split('')
+    else
+      @wrong_guess_number += 1
+    end
+  end
+
+  def check_letter(guessed_letter)
+    if @word.split('').include?(guessed_letter)
+      @word.split('').each_with_index do |word_letter, index|
+        if guessed_letter == word_letter
+          @board.layout[index] = guessed_letter
+        end
+      end
+    else
+      @wrong_guess_number += 1
+      @incorrect_letters.push(guessed_letter)
+    end
+  end
 
 end
 
 class Player
+  attr_reader :name
 
   def initialize(name)
     @name = name
@@ -29,11 +100,17 @@ class Player
 end
 
 class Board
+  attr_accessor :layout
 
-  def initialize
-    @layout = "_ _ _ _ _"
+  def initialize(word)
+    @layout = Array.new(word.length, "_")
+  end
+
+  def display
+    puts @layout.join(' ')
   end
 
 end
 
-Game.new(get_word)
+game = Game.new(get_word)
+game.start
