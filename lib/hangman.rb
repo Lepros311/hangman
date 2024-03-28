@@ -1,3 +1,5 @@
+require 'yaml'
+
 def get_word
   dictionary = File.read('google-10000-english-no-swears.txt')
   dictionary_array = dictionary.split
@@ -21,11 +23,31 @@ class Game
     @guessed_letters = []
     @incorrect_letters = []
     @wrong_guess_number = 0
-    @choice = 0
+    @guess_choice = 0
     @guessed_word
+    @save_choice = ''
   end
 
-  def start
+  def choose_previous_or_new
+    puts "\n#{@player.name}, do you want to load a previous game or start a new game?"
+    start_choice = 0
+    loop do
+      puts "Enter 1 to load previous game or 2 to start a new game."
+      start_choice = gets.chomp.to_i
+      break if [1, 2].include?(start_choice)
+      puts "Invalid option. Enter 1 or 2."
+      puts "\n"
+    end
+    if start_choice == 1
+      load_game
+      @board.display
+      player_turn
+    else
+      new_game
+    end
+  end
+
+  def new_game
     puts "\nWelcome, #{@player.name}."
     puts "Your word has a total of #{@word.length} letters."
     puts @word
@@ -33,15 +55,49 @@ class Game
     player_turn
   end
 
+  def save_game
+    print "Save as: "
+    save_name = gets.chomp
+    File.new("#{save_name}.txt", 'w')
+    File.write("#{save_name}.txt", YAML.dump(self))
+    puts "Game saved."
+  end
+
+  def load_game
+    print "Game name: "
+    game_name = gets.chomp
+    yaml_content = File.read("#{game_name}.txt")
+    loaded_game = YAML.safe_load(yaml_content, permitted_classes: [Game, Player, Board])
+    @word = loaded_game.word
+    @player = loaded_game.instance_variable_get(:@player)
+    @board = loaded_game.instance_variable_get(:@board)
+    @guessed_letter = loaded_game.guessed_letter
+    @guessed_letters = loaded_game.guessed_letters
+    @incorrect_letters = loaded_game.incorrect_letters
+    @wrong_guess_number = loaded_game.instance_variable_get(:@wrong_guess_number)
+    @guess_choice = loaded_game.instance_variable_get(:@guess_choice)
+    @guessed_word = loaded_game.guessed_word
+    @save_choice = loaded_game.instance_variable_get(:@save_choice)
+  end
+
   def player_turn
     loop do
       loop do
+        print "Save game? (y/n): "
+        @save_choice = gets.chomp
+        break if ["yes", "y", "no", "n"].include?(@save_choice)
+        puts "Invalid option."
+      end
+      if ["yes", "y"].include?(@save_choice)
+        save_game
+      end
+      loop do
         puts "\nEnter 1 to guess a letter. Enter 2 to guess the word."
-        @choice = gets.chomp.to_i
-        break if [1, 2].include?(@choice)
+        @guess_choice = gets.chomp.to_i
+        break if [1, 2].include?(@guess_choice)
         puts "Invalid option. Enter 1 or 2."
       end
-      if @choice == 1
+      if @guess_choice == 1
         loop do
           print "\nGuess a letter: "
           @guessed_letter = gets.chomp.downcase
@@ -116,4 +172,4 @@ class Board
 end
 
 game = Game.new(get_word)
-game.start
+game.choose_previous_or_new

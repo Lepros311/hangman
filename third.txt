@@ -1,0 +1,29 @@
+--- !ruby/object:Game
+word: particles
+player: !ruby/object:Player
+  name: Andrew
+board: !ruby/object:Board
+  layout:
+  - p
+  - _
+  - r
+  - _
+  - _
+  - _
+  - _
+  - e
+  - s
+guessed_letter: u
+guessed_letters:
+- p
+- r
+- s
+- e
+- j
+- u
+incorrect_letters:
+- j
+- u
+wrong_guess_number: 2
+guess_choice: 1
+save_choice: "y"
