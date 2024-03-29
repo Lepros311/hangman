@@ -9,18 +9,24 @@ board: !ruby/object:Board
   - _
   - r
   - _
-  - _
+  - e
   - r
-guessed_letter: l
+guessed_letter: m
 guessed_letters:
 - r
 - c
 - h
 - f
 - l
+- t
+- e
+- m
 incorrect_letters:
 - f
 - l
-wrong_guess_number: 2
-guess_choice: 1
+- t
+- m
+wrong_guess_number: 4
+guess_choice: 3
 save_choice: "y"
+guessed_word: 

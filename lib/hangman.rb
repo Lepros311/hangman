@@ -39,9 +39,11 @@ class Game
       puts "\n"
     end
     if start_choice == 1
-      load_game
+      yml_file_name = load_game
       @board.display
-      player_turn
+      puts "\nIncorrect letters: #{incorrect_letters}"
+      puts "\nIncorrect guesses made: #{@wrong_guess_number} (loss = 7)"
+      player_turn(yml_file_name)
     else
       new_game
     end
@@ -55,12 +57,16 @@ class Game
     player_turn
   end
 
-  def save_game
-    print "Save as: "
-    save_name = gets.chomp
+  def save_game(yml_file_name)
+    if yml_file_name != ''
+      save_name = yml_file_name[yml_file_name.rindex("/")+1..-5]
+    else
+      print "Save as: "
+      save_name = gets.chomp
+    end
     File.new("#{save_name}.yml", 'w')
     File.write("#{save_name}.yml", YAML.dump(self))
-    puts "Game saved. Goodbye!"
+    puts "Game '#{save_name}' saved. Goodbye!"
   end
 
   def load_game
@@ -78,6 +84,7 @@ class Game
       break if (game_number > 0) && (game_number <= yml_files.length) && File.exist?(yml_files[game_number-1])
       puts "Invalid option. Try again."
     end
+    yml_file_name = yml_files[game_number-1]
     yaml_content = File.read(yml_files[game_number-1])
     loaded_game = YAML.safe_load(yaml_content, permitted_classes: [Game, Player, Board])
     @word = loaded_game.word
@@ -90,9 +97,10 @@ class Game
     @guess_choice = loaded_game.instance_variable_get(:@guess_choice)
     @guessed_word = loaded_game.guessed_word
     @save_choice = loaded_game.instance_variable_get(:@save_choice)
+    yml_file_name
   end
 
-  def player_turn
+  def player_turn(yml_file_name = '')
     loop do
       loop do
         puts "\nOptions: 1 = Guess a letter. 2 Guess the word. 3 = Save and quit. 4 = Quit without saving. 5 = Start a new game."
@@ -116,7 +124,7 @@ class Game
         check_word(@guessed_word)
         @board.display
       elsif @guess_choice == 3
-        save_game
+        save_game(yml_file_name)
         break
       elsif @guess_choice == 4
         puts "Goodbye!"
