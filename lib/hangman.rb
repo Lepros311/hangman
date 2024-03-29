@@ -64,15 +64,24 @@ class Game
       print "Save as: "
       save_name = gets.chomp
     end
-    File.new("#{save_name}.yml", 'w')
-    File.write("#{save_name}.yml", YAML.dump(self))
+    # File.new("#{save_name}.yml", 'w')
+    # File.write("#{save_name}.yml", YAML.dump(self))
+    folder_path = "/home/lepros/repos/hangman/saved_games"
+    file_path = File.join(folder_path, "#{save_name}.yml")
+    File.new(file_path, 'w')
+    File.write(file_path, YAML.dump(self))
     puts "Game '#{save_name}' saved. Goodbye!"
   end
 
   def load_game
+    # current_directory = __dir__
+    # parent_directory = File.expand_path('..', current_directory)
+    # yml_files = Dir.glob(File.join(parent_directory, '*.yml'))
     current_directory = __dir__
     parent_directory = File.expand_path('..', current_directory)
-    yml_files = Dir.glob(File.join(parent_directory, '*.yml'))
+    child_folder = "saved_games"
+    folder_path = File.join(parent_directory, child_folder)
+    yml_files = Dir.glob(File.join(folder_path, '*.yml'))
     puts "Saved games:"
     yml_files.each_with_index do |file, index|
       puts "#{index+1}. #{File.basename(file)}"

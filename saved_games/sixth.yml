@@ -1,0 +1,34 @@
+--- !ruby/object:Game
+word: dynamic
+player: !ruby/object:Player
+  name: Andrew
+board: !ruby/object:Board
+  layout:
+  - _
+  - _
+  - _
+  - a
+  - _
+  - i
+  - _
+guessed_letter: u
+guessed_letters:
+- a
+- s
+- t
+- r
+- e
+- o
+- i
+- u
+incorrect_letters:
+- s
+- t
+- r
+- e
+- o
+- u
+wrong_guess_number: 6
+guess_choice: 3
+save_choice: ''
+guessed_word: 
