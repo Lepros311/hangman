@@ -1,29 +1,23 @@
 --- !ruby/object:Game
-word: particles
+word: tuner
 player: !ruby/object:Player
   name: Andrew
 board: !ruby/object:Board
   layout:
-  - p
+  - t
   - _
-  - r
-  - _
-  - _
+  - "n"
   - _
   - _
-  - e
-  - s
-guessed_letter: u
+guessed_letter: f
 guessed_letters:
-- p
-- r
-- s
-- e
-- j
-- u
+- t
+- "n"
+- a
+- f
 incorrect_letters:
-- j
-- u
+- a
+- f
 wrong_guess_number: 2
-guess_choice: 1
-save_choice: "y"
+guess_choice: 3
+save_choice: ''

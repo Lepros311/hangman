@@ -50,7 +50,7 @@ class Game
   def new_game
     puts "\nWelcome, #{@player.name}."
     puts "Your word has a total of #{@word.length} letters."
-    puts @word
+    # puts @word
     @board.display
     player_turn
   end
@@ -58,15 +58,27 @@ class Game
   def save_game
     print "Save as: "
     save_name = gets.chomp
-    File.new("#{save_name}.txt", 'w')
-    File.write("#{save_name}.txt", YAML.dump(self))
-    puts "Game saved."
+    File.new("#{save_name}.yml", 'w')
+    File.write("#{save_name}.yml", YAML.dump(self))
+    puts "Game saved. Goodbye!"
   end
 
   def load_game
-    print "Game name: "
-    game_name = gets.chomp
-    yaml_content = File.read("#{game_name}.txt")
+    current_directory = __dir__
+    parent_directory = File.expand_path('..', current_directory)
+    yml_files = Dir.glob(File.join(parent_directory, '*.yml'))
+    puts "Saved games:"
+    yml_files.each_with_index do |file, index|
+      puts "#{index+1}. #{File.basename(file)}"
+    end
+    game_number = 0
+    loop do
+      print "Enter the number of the saved game: "
+      game_number = gets.chomp.to_i
+      break if (game_number > 0) && (game_number <= yml_files.length) && File.exist?(yml_files[game_number-1])
+      puts "Invalid option. Try again."
+    end
+    yaml_content = File.read(yml_files[game_number-1])
     loaded_game = YAML.safe_load(yaml_content, permitted_classes: [Game, Player, Board])
     @word = loaded_game.word
     @player = loaded_game.instance_variable_get(:@player)
@@ -83,19 +95,10 @@ class Game
   def player_turn
     loop do
       loop do
-        print "Save game? (y/n): "
-        @save_choice = gets.chomp
-        break if ["yes", "y", "no", "n"].include?(@save_choice)
-        puts "Invalid option."
-      end
-      if ["yes", "y"].include?(@save_choice)
-        save_game
-      end
-      loop do
-        puts "\nEnter 1 to guess a letter. Enter 2 to guess the word."
+        puts "\nOptions: 1 = Guess a letter. 2 Guess the word. 3 = Save and quit. 4 = Quit without saving. 5 = Start a new game."
         @guess_choice = gets.chomp.to_i
-        break if [1, 2].include?(@guess_choice)
-        puts "Invalid option. Enter 1 or 2."
+        break if [1, 2, 3, 4, 5].include?(@guess_choice)
+        puts "Invalid option. Enter 1, 2, 3, 4, or 5."
       end
       if @guess_choice == 1
         loop do
@@ -104,14 +107,24 @@ class Game
           break if @guessed_letter.match?(/[a-z]/)
           puts "Invalid option. Valid options are any letter a - z."
         end
-          @guessed_letters.push(@guessed_letter)
-          check_letter(@guessed_letter)
-          @board.display
-        else
-          print "\nGuess the word: "
-          @guessed_word = gets.chomp.downcase
-          check_word(@guessed_word)
-          @board.display
+        @guessed_letters.push(@guessed_letter)
+        check_letter(@guessed_letter)
+        @board.display
+      elsif @guess_choice == 2
+        print "\nGuess the word: "
+        @guessed_word = gets.chomp.downcase
+        check_word(@guessed_word)
+        @board.display
+      elsif @guess_choice == 3
+        save_game
+        break
+      elsif @guess_choice == 4
+        puts "Goodbye!"
+        break
+      else
+        game2 = Game.new(get_word)
+        game2.new_game
+        break
       end
       puts "\nIncorrect letters: #{incorrect_letters}"
       puts "\nIncorrect guesses made: #{@wrong_guess_number} (loss = 7)"

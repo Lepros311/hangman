@@ -1,0 +1,26 @@
+--- !ruby/object:Game
+word: charger
+player: !ruby/object:Player
+  name: Andrew
+board: !ruby/object:Board
+  layout:
+  - c
+  - h
+  - _
+  - r
+  - _
+  - _
+  - r
+guessed_letter: l
+guessed_letters:
+- r
+- c
+- h
+- f
+- l
+incorrect_letters:
+- f
+- l
+wrong_guess_number: 2
+guess_choice: 1
+save_choice: "y"
